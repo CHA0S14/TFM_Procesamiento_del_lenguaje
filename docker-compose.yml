@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  neo4J:
+    image: neo4j:enterprise
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    ports:
+      - '7474:7474'
+      - '7687:7687'
+    environment:
+      - NEO4JLABS_PLUGINS=["apoc"]
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+    volumes:
+      - './neo4j/logs:/logs'
+      - './neo4j/conf:/var/lib/neo4j/conf'
