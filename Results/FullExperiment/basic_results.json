@@ -1,0 +1,13 @@
+{
+    "ponderation": "noPonderation",
+    "score": {
+        "mrr": 0.2893,
+        "map@1": 0.152,
+        "map@5": 0.0856,
+        "map@10": 0.0622,
+        "map@15": 0.0501,
+        "map@20": 0.0417
+    },
+    "Total time": "320146.5423s",
+    "Mean time": "320.1465s"
+}
