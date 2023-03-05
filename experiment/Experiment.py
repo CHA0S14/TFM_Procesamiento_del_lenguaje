@@ -16,7 +16,7 @@ class Experiment:
     action_types = ['interaction item image', 'interaction item info', 'interaction item deals',
                     'interaction item rating', 'search for item', 'clickout item']
 
-    def __extract_users_clicked_impression(self, user, impressions):
+    def extract_users_clicked_impression(self, user, impressions):
 
         if self.verbose:
             print(f'{user}: Extracting users that clicked on impressions...')
@@ -31,7 +31,7 @@ class Experiment:
 
         return users.tolist()
 
-    def __get_clicked_history_from_user(self, user, user_list):
+    def get_clicked_history_from_user(self, user, user_list):
         if self.verbose:
             print(f'{user}: Extracting users click history...')
 
@@ -41,7 +41,7 @@ class Experiment:
                 self.data_df['reference'].notnull())]
         return clicked_df.reference.unique().tolist()
 
-    def __save_data_csv(self, uid, user, users_clicked_impression, hotel_history, impressions,
+    def save_data_csv(self, uid, user, users_clicked_impression, hotel_history, impressions,
                         save_path=None):
 
         if not save_path:
@@ -85,7 +85,7 @@ class Experiment:
             write = csv.writer(f, lineterminator='\n')
             write.writerow(impressions)
 
-    def __create_lattice(self, uid, db_name):
+    def create_lattice(self, uid, db_name):
         if self.verbose:
             print(f'{uid}: Creating lattice and storing on database...')
 
@@ -102,7 +102,7 @@ class Experiment:
 
         utils.to_log(f'{uid}: {stdout.decode("utf-8")}', self.log_path, 'java-latice.log')
 
-    def __process_user(self, uid, user, impressions):
+    def process_user(self, uid, user, impressions):
         # Preparing even_type list containing:
         #   - interaction item image
         # 	- interaction item info
@@ -111,25 +111,25 @@ class Experiment:
         # 	- search for item
         # 	- clickout item
 
-        users_clicked_impression = self.__extract_users_clicked_impression(user, impressions)
+        users_clicked_impression = self.extract_users_clicked_impression(user, impressions)
 
         if not users_clicked_impression:
             return None, None, None, "Error obtaining users who clicked impressions: empty list or NaN"
 
-        hotel_history = self.__get_clicked_history_from_user(user, users_clicked_impression)
+        hotel_history = self.get_clicked_history_from_user(user, users_clicked_impression)
 
         if not hotel_history:
             hotel_history = []
 
-        self.__save_data_csv(uid, user, users_clicked_impression, hotel_history, impressions)
+        self.save_data_csv(uid, user, users_clicked_impression, hotel_history, impressions)
 
         data_model.create_database(uid, db)
 
-        self.__create_lattice(f'automatic_test_{uid}', uid)
+        self.create_lattice(f'automatic_test_{uid}', uid)
 
         return utils.get_user_info(user, self.data_df)
 
-    def __ranking_prediction(self, user, prediction, impressions):
+    def ranking_prediction(self, user, prediction, impressions):
         ranking = {}
         for hotel in prediction:
             attribute_concept, _ = data_model.get_attribute_concept(hotel["name"], db)
@@ -151,7 +151,7 @@ class Experiment:
 
         return ranking
 
-    def __extract_impressions(self, user):
+    def extract_impressions(self, user):
         if self.verbose:
             print(f'{user}: Extracting impressions...')
 
@@ -163,7 +163,7 @@ class Experiment:
         # Getting impressions and split the string by | into a list
         return data_to_guess['impressions'].values[0].split('|')
 
-    def __clean(self, uid, metadata_path=None):
+    def clean(self, uid, metadata_path=None):
         if not metadata_path:
             metadata_path = f"{self.processed_data_path}/metadata"
 
@@ -180,10 +180,10 @@ class Experiment:
 
         shutil.rmtree(uid_path)
 
-    def __write_into_ko(self, user, message):
+    def write_into_ko(self, user, message):
         utils.append_csv(['user_id', 'message'], [user, message], f"{self.folder}/ko", "error.csv")
 
-    def __make_prediction(self, index, user):
+    def make_prediction(self, index, user):
         uid = f'test{index}'
 
         if utils.is_in_csv(self.folder, user):
@@ -191,12 +191,12 @@ class Experiment:
 
         start = time.time()
 
-        impressions = self.__extract_impressions(user)
+        impressions = self.extract_impressions(user)
 
         if not impressions:
             return user, "Error obtaining impressions: empty list or NaN"
 
-        session_id, timestamp, step, result = self.__process_user(uid, user, impressions)
+        session_id, timestamp, step, result = self.process_user(uid, user, impressions)
 
         if session_id is None:
             return user, result
@@ -211,18 +211,18 @@ class Experiment:
                 item in [obj["name"] for obj in prediction] for item in impressions):
             prediction = [{"name": impression, "distance": 0} for impression in impressions]
 
-        prediction = self.__ranking_prediction(user, prediction, impressions)
+        prediction = self.ranking_prediction(user, prediction, impressions)
 
         if not prediction or len(prediction) == 0:
             print(f'{uid}: Could not make a prediction...')
             result = f"Empty prediction"
 
-        self.__clean(uid)
+        self.clean(uid)
 
         # If result is not done, print error
         if result != "Done!":
             print(f'{user}: {result}')
-            self.__write_into_ko(user, result)
+            self.write_into_ko(user, result)
             return
 
         submission = [user, session_id, timestamp, step, ' '.join(prediction)]
@@ -243,7 +243,7 @@ class Experiment:
         # Parallel process users
         print("Processing users...")
         Parallel(n_jobs=self.jobs, verbose=10, backend="threading")(
-            delayed(self.__make_prediction)(index, user) for index, user in
+            delayed(self.make_prediction)(index, user) for index, user in
             enumerate(self.experiment_users))
 
         print("Done!")

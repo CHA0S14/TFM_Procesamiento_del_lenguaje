@@ -1,0 +1,13 @@
+{
+    "ponderation": "baseLineFrequency",
+    "score": {
+        "mrr": 0.2937,
+        "map@1": 0.147,
+        "map@5": 0.0856,
+        "map@10": 0.0655,
+        "map@15": 0.0548,
+        "map@20": 0.0473
+    },
+    "Total time": "132153.8401s",
+    "Mean time": "132.1538s"
+}

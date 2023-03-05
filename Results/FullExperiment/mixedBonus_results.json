@@ -1,0 +1,13 @@
+{
+    "ponderation": "mixedBonusPonderated",
+    "score": {
+        "mrr": 0.3528,
+        "map@1": 0.215,
+        "map@5": 0.1002,
+        "map@10": 0.0654,
+        "map@15": 0.0512,
+        "map@20": 0.0419
+    },
+    "Total time": "1522983.1230s",
+    "Mean time": "1522.9831s"
+}

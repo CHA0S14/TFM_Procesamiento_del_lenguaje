@@ -1,0 +1,13 @@
+{
+    "ponderation": "clickedBonus",
+    "score": {
+        "mrr": 0.2965,
+        "map@1": 0.155,
+        "map@5": 0.088,
+        "map@10": 0.0628,
+        "map@15": 0.0503,
+        "map@20": 0.0418
+    },
+    "Total time": "1503507.7525s",
+    "Mean time": "1503.5078s"
+}

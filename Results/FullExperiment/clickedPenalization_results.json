@@ -1,0 +1,13 @@
+{
+    "ponderation": "clickedPenalization",
+    "score": {
+        "mrr": 0.2867,
+        "map@1": 0.152,
+        "map@5": 0.0838,
+        "map@10": 0.0611,
+        "map@15": 0.0497,
+        "map@20": 0.0418
+    },
+    "Total time": "1604567.2924s",
+    "Mean time": "1604.5673s"
+}

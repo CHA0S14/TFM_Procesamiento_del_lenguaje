@@ -1,0 +1,13 @@
+{
+    "ponderation": "baseLineRandom",
+    "score": {
+        "mrr": 0.1746,
+        "map@1": 0.05,
+        "map@5": 0.0504,
+        "map@10": 0.048,
+        "map@15": 0.0452,
+        "map@20": 0.043
+    },
+    "Total time": "240447.6430s",
+    "Mean time": "240.4476s"
+}

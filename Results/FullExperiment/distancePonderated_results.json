@@ -1,0 +1,13 @@
+{
+    "ponderation": "distancePonderated",
+    "score": {
+        "mrr": 0.3465,
+        "map@1": 0.204,
+        "map@5": 0.0992,
+        "map@10": 0.0656,
+        "map@15": 0.0512,
+        "map@20": 0.042
+    },
+    "Total time": "1212918.9946s",
+    "Mean time": "1212.9190s"
+}

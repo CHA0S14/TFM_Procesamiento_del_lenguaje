@@ -1,6 +1,8 @@
 from utils import utils, score
 import os
 from experiment.Experiment import Experiment
+from experiment.FrecuencyBaseLine import FrecuencyBaseLine
+from experiment.RandomBaseLine import RandomBaseLine
 import json
 
 data_df, metadata_df, ground_df = utils.load_data("dataset/test.csv",
@@ -43,24 +45,25 @@ experiments = {
         "ponderation": "distancePonderated",
         "score": None
     },
-    "visitedPonderated": {
-        "ponderation": "clickedPonderated",
+    "clickedPenalization": {
+        "ponderation": "clickedPenalization",
         "score": None
     },
-    "mixed": {
-        "ponderation": "mixedPonderated",
+    "clickedBonus": {
+        "ponderation": "clickedBonus",
+        "score": None
+    },
+    "mixedPenalization": {
+        "ponderation": "mixedPenalizationPonderated",
+        "score": None
+    },
+    "mixedBonus": {
+        "ponderation": "mixedBonusPonderated",
         "score": None
     }
 }
 
-for name, configuration in experiments.items():
-    print(f"Running experiment {name} with ponderation {configuration['ponderation']}")
-
-    experiment_folder = f"{full_experiment_result}/{name}"
-
-    experiment = Experiment(folder=experiment_folder, data_df=data_df,
-                            experiment_users=experiment_users, ponderation=configuration["ponderation"], jobs=10)
-
+def runExperiment(experiment, experiment_folder, configuration, name):
     experiment.init_experiment()
 
     total_time, mean_time = utils.calculate_time(experiment_folder)
@@ -72,3 +75,43 @@ for name, configuration in experiments.items():
 
     with open(f'{full_experiment_result}/{name}_results.json', "w") as f:
         f.write(json.dumps(configuration, indent=4))
+
+
+print("Running base line experiments")
+
+print("Running base line random experiment")
+experiment_folder = f"{full_experiment_result}/random"
+runExperiment(
+    experiment = RandomBaseLine(folder=experiment_folder, data_df=data_df, experiment_users=experiment_users, verbose=False),
+    experiment_folder = experiment_folder,
+    configuration = {
+                        "ponderation": "baseLineRandom",
+                        "score": None
+                    },
+    name="random"
+)
+
+print("Running base line popularity experiment")
+experiment_folder = f"{full_experiment_result}/frecuency"
+runExperiment(
+    experiment = FrecuencyBaseLine(folder=experiment_folder, data_df=data_df, experiment_users=experiment_users, verbose=False),
+    experiment_folder = experiment_folder,
+    configuration = {
+                        "ponderation": "baseLineFrequency",
+                        "score": None
+                    },
+    name="frecuency"
+)
+
+for name, configuration in experiments.items():
+    print(f"Running experiment {name} with ponderation {configuration['ponderation']}")
+
+    experiment_folder = f"{full_experiment_result}/{name}"
+
+    runExperiment(
+        experiment = Experiment(folder=experiment_folder, data_df=data_df,
+                                experiment_users=experiment_users, ponderation=configuration["ponderation"], jobs=10),
+        experiment_folder = experiment_folder,
+        configuration = configuration,
+        name = name
+    )
